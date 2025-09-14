@@ -1,6 +1,6 @@
 import tkinter as tk
 
-def criar_menu_filtros(root, callback):
+def criar_menu_filtros(root, callback, image_manager):
     menu = tk.Menu(root, tearoff=0)
     menu.add_command(label="Brilho e contraste", command=lambda: callback("Brilho e contraste"))
     menu.add_command(label="Grayscale", command=lambda: callback("Grayscale"))
