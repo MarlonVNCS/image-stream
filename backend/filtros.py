@@ -9,7 +9,7 @@ def invert_colors(matrix):
     edited_matrix = 255 - matrix
     return edited_matrix
 
-def gray_scale(matrix):
+def grayscale(matrix):
     # (Cor R + Cor G + Cor B)/3
     if len(matrix.shape) == 3 and matrix.shape[2] == 3:  # Check if it's an RGB image
         gray_matrix = np.mean(matrix, axis=2).astype(np.uint8)  # Convert to grayscale
@@ -18,7 +18,7 @@ def gray_scale(matrix):
         edited_matrix = matrix  # If not RGB, return the original matrix
     return edited_matrix
 
-def brightness_contrast(matrix, brightness=0, contrast=1):
+def brilho_contraste(matrix, brilho=0.0, contraste=1.0):
     # Adjust brightness and contrast
-    edited_matrix = np.clip(contrast * matrix + brightness, 0, 255).astype(np.uint8)
+    edited_matrix = np.clip(contraste * matrix + brilho, 0, 255).astype(np.uint8)
     return edited_matrix

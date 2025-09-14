@@ -1,6 +1,6 @@
-from math import e
 import tkinter as tk
 import backend.transformacoes as t
+from .utils import janela_base
 
 def criar_menu_transformacoes(root, callback, image_manager):
     menu = tk.Menu(root, tearoff=0)
@@ -115,9 +115,3 @@ def diminuir(image_manager, factor):
     image_manager.set_edited_matrix(matrix)
     image_manager.root.mostrar_modificacoes()
     
-def janela_base(nome):
-    janela = tk.Toplevel()
-    janela.title(nome)
-    janela.geometry("300x200")
-    tk.Label(janela, text=nome).pack(pady=20)
-    return janela
