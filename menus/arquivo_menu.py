@@ -50,4 +50,4 @@ def mostrar_sobre():
         "Júlia Nathalie Schmitz\n" +
         "Marlon Vinicius Gonçalves\n\n" +
         "Processamento Digital de Imagens\n" +
-        "Universidade Feevale - 2023/2")
+        "Universidade Feevale - 2025/2")
