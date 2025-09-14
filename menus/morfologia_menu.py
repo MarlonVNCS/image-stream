@@ -1,6 +1,6 @@
 import tkinter as tk
 
-def criar_menu_morfologia(root, callback):
+def criar_menu_morfologia(root, callback, image_manager):
     menu = tk.Menu(root, tearoff=0)
     menu.add_command(label="Dilatação", command=lambda: callback("Dilatação"))
     menu.add_command(label="Erosão", command=lambda: callback("Erosão"))
