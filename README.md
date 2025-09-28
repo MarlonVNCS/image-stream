@@ -13,8 +13,7 @@ Para executar a aplicação, você precisa ter instalado:
 - As seguintes bibliotecas Python:
   ```bash
   pip install pillow numpy
-  pip install opencv-python
-  ```
+    ```
   
 Obs: O `tkinter` já vem incluído na instalação padrão do Python.
 

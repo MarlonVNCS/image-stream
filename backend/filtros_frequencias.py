@@ -1,6 +1,5 @@
 import numpy as np
 from PIL import Image
-import cv2  #para alguns filtros adicionais
 
 
 def filtro_mediana(imagem, tamanho_kernel=3):
@@ -71,60 +70,103 @@ def filtro_gaussiano(imagem, sigma=1.0):
         return resultado.astype(np.uint8)
 
 def filtro_laplaciano(imagem, ksize=3):
-
     if imagem.dtype != np.uint8:
         imagem = np.clip(imagem, 0, 255).astype(np.uint8)
     
     if len(imagem.shape) == 3:
-        imagem_gray = cv2.cvtColor(imagem, cv2.COLOR_RGB2GRAY)
-        bordas = cv2.Laplacian(imagem_gray, cv2.CV_64F, ksize=ksize)
-        bordas = np.absolute(bordas)
-        bordas = np.clip(bordas, 0, 255).astype(np.uint8)
-        return cv2.cvtColor(bordas, cv2.COLOR_GRAY2RGB)
+        imagem_gray = np.mean(imagem, axis=2).astype(np.uint8)
     else:
-        bordas = cv2.Laplacian(imagem, cv2.CV_64F, ksize=ksize)
-        return np.absolute(bordas).clip(0, 255).astype(np.uint8)
+        imagem_gray = imagem
+        
+    if ksize == 3:
+        kernel = np.array([[0, 1, 0],
+                          [1, -4, 1],
+                          [0, 1, 0]])
+    else:  
+        kernel = np.array([[0, 0, 1, 0, 0],
+                          [0, 1, 2, 1, 0],
+                          [1, 2, -16, 2, 1],
+                          [0, 1, 2, 1, 0],
+                          [0, 0, 1, 0, 0]])
+    
+    pad = ksize // 2
+    padded = np.pad(imagem_gray, pad, mode='reflect')
+    bordas = np.zeros_like(imagem_gray, dtype=np.float64)
+    
+    for i in range(imagem_gray.shape[0]):
+        for j in range(imagem_gray.shape[1]):
+            vizinhanca = padded[i:i+ksize, j:j+ksize]
+            bordas[i,j] = np.sum(vizinhanca * kernel)
+    
+    bordas = np.absolute(bordas)
+    bordas = np.clip(bordas, 0, 255).astype(np.uint8)
+    
+    if len(imagem.shape) == 3:
+        return np.stack((bordas,)*3, axis=-1)
+    return bordas
 
 def filtro_sobel(imagem, direcao='ambos', ksize=3):
-
     if imagem.dtype != np.uint8:
         imagem = np.clip(imagem, 0, 255).astype(np.uint8)
     
     if len(imagem.shape) == 3:
-        imagem_gray = cv2.cvtColor(imagem, cv2.COLOR_RGB2GRAY)
+        imagem_gray = np.mean(imagem, axis=2).astype(np.uint8)
     else:
         imagem_gray = imagem
     
+    if ksize == 3:
+        kernel_x = np.array([[-1, 0, 1],
+                           [-2, 0, 2],
+                           [-1, 0, 1]])
+        kernel_y = np.array([[-1, -2, -1],
+                           [0, 0, 0],
+                           [1, 2, 1]])
+    else:  
+        kernel_x = np.array([[-1, -2, 0, 2, 1],
+                           [-4, -8, 0, 8, 4],
+                           [-6, -12, 0, 12, 6],
+                           [-4, -8, 0, 8, 4],
+                           [-1, -2, 0, 2, 1]])
+        kernel_y = kernel_x.T
+    
+    pad = ksize // 2
+    padded = np.pad(imagem_gray, pad, mode='reflect')
+    grad_x = np.zeros_like(imagem_gray, dtype=np.float64)
+    grad_y = np.zeros_like(imagem_gray, dtype=np.float64)
+    
+    for i in range(imagem_gray.shape[0]):
+        for j in range(imagem_gray.shape[1]):
+            vizinhanca = padded[i:i+ksize, j:j+ksize]
+            if direcao in ['x', 'ambos']:
+                grad_x[i,j] = np.sum(vizinhanca * kernel_x)
+            if direcao in ['y', 'ambos']:
+                grad_y[i,j] = np.sum(vizinhanca * kernel_y)
+    
     if direcao == 'x':
-        grad_x = cv2.Sobel(imagem_gray, cv2.CV_64F, 1, 0, ksize=ksize)
         grad = np.absolute(grad_x)
     elif direcao == 'y':
-        grad_y = cv2.Sobel(imagem_gray, cv2.CV_64F, 0, 1, ksize=ksize)
         grad = np.absolute(grad_y)
-    else: 
-        grad_x = cv2.Sobel(imagem_gray, cv2.CV_64F, 1, 0, ksize=ksize)
-        grad_y = cv2.Sobel(imagem_gray, cv2.CV_64F, 0, 1, ksize=ksize)
+    else:
         grad = np.sqrt(grad_x**2 + grad_y**2)
     
     grad = np.clip(grad, 0, 255).astype(np.uint8)
     
     if len(imagem.shape) == 3:
-        return cv2.cvtColor(grad, cv2.COLOR_GRAY2RGB)
+        return np.stack((grad,)*3, axis=-1)
     return grad
 
 def limiarizacao_global(imagem, limiar=127, valor_max=255):
-  
     if imagem.dtype != np.uint8:
         imagem = np.clip(imagem, 0, 255).astype(np.uint8)
     
     if len(imagem.shape) == 3:
-        imagem_gray = cv2.cvtColor(imagem, cv2.COLOR_RGB2GRAY)
+        imagem_gray = np.mean(imagem, axis=2).astype(np.uint8)
     else:
         imagem_gray = imagem
     
-    _, resultado = cv2.threshold(imagem_gray, limiar, valor_max, cv2.THRESH_BINARY)
+    resultado = np.where(imagem_gray >= limiar, valor_max, 0).astype(np.uint8)
     
     if len(imagem.shape) == 3:
-        return cv2.cvtColor(resultado, cv2.COLOR_GRAY2RGB)
+        return np.stack((resultado,)*3, axis=-1)
     return resultado
 
