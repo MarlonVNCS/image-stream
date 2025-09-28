@@ -145,7 +145,7 @@ def aplicar_filtro_laplaciano(image_manager, kernel_size):
     image_manager.root.mostrar_modificacoes()
 
 def filtro_sobel_janela(image_manager):
-    janela = janela_base("Filtro Sobel")
+    janela = janela_base("Filtro Sobel", altura=300)
     
     label_direcao = tk.Label(janela, text="Direção:")
     label_direcao.pack()
@@ -181,8 +181,8 @@ def aplicar_filtro_sobel(image_manager, direcao, kernel_size):
     image_manager.set_edited_matrix(matrix)
     image_manager.root.mostrar_modificacoes()
 
-def limiarizacao_global_janela(image_manager):
-    janela = janela_base("Limiarização Global")
+def limiarizacao_global_janela(image_manager): 
+    janela = janela_base("Limiarização Global(Threshold)")
     
     label_limiar = tk.Label(janela, text="Valor do limiar (0-255):")
     label_limiar.pack()

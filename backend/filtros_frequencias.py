@@ -1,6 +1,4 @@
 import numpy as np
-from PIL import Image
-
 
 def filtro_mediana(imagem, tamanho_kernel=3):
     if tamanho_kernel % 2 == 0:
