@@ -1,30 +1,74 @@
 import numpy as np
-from scipy import ndimage
 from PIL import Image
 import cv2  #para alguns filtros adicionais
 
 
 def filtro_mediana(imagem, tamanho_kernel=3):
+    if tamanho_kernel % 2 == 0:
+        tamanho_kernel += 1
+    
+    pad = tamanho_kernel // 2
     
     if len(imagem.shape) == 3:
         resultado = np.zeros_like(imagem)
         for canal in range(3):
-            resultado[:,:,canal] = ndimage.median_filter(imagem[:,:,canal], 
-                                                       size=tamanho_kernel)
+            padded = np.pad(imagem[:,:,canal], pad, mode='reflect')
+            temp = np.zeros_like(imagem[:,:,canal])
+            
+            for i in range(imagem.shape[0]):
+                for j in range(imagem.shape[1]):
+                    vizinhanca = padded[i:i+tamanho_kernel, j:j+tamanho_kernel]
+                    temp[i,j] = np.median(vizinhanca)
+            
+            resultado[:,:,canal] = temp
         return resultado
     else:
-        return ndimage.median_filter(imagem, size=tamanho_kernel)
-
+        padded = np.pad(imagem, pad, mode='reflect')
+        resultado = np.zeros_like(imagem)
+        
+        for i in range(imagem.shape[0]):
+            for j in range(imagem.shape[1]):
+                vizinhanca = padded[i:i+tamanho_kernel, j:j+tamanho_kernel]
+                resultado[i,j] = np.median(vizinhanca)
+        
+        return resultado
 
 def filtro_gaussiano(imagem, sigma=1.0):
+
+    tamanho_kernel = int(6 * sigma + 1)
+    if tamanho_kernel % 2 == 0:
+        tamanho_kernel += 1
+    
+    x = np.linspace(-(tamanho_kernel//2), tamanho_kernel//2, tamanho_kernel)
+    x, y = np.meshgrid(x, x)
+    kernel = np.exp(-(x**2 + y**2)/(2*sigma**2))
+    kernel = kernel / kernel.sum()  
+    
+    pad = tamanho_kernel // 2
+    
     if len(imagem.shape) == 3:
         resultado = np.zeros_like(imagem)
         for canal in range(3):
-            resultado[:,:,canal] = ndimage.gaussian_filter(imagem[:,:,canal], 
-                                                         sigma=sigma)
-        return resultado
+            padded = np.pad(imagem[:,:,canal], pad, mode='reflect')
+            temp = np.zeros_like(imagem[:,:,canal])
+            
+            for i in range(imagem.shape[0]):
+                for j in range(imagem.shape[1]):
+                    vizinhanca = padded[i:i+tamanho_kernel, j:j+tamanho_kernel]
+                    temp[i,j] = np.sum(vizinhanca * kernel)
+            
+            resultado[:,:,canal] = temp
+        return resultado.astype(np.uint8)
     else:
-        return ndimage.gaussian_filter(imagem, sigma=sigma)
+        padded = np.pad(imagem, pad, mode='reflect')
+        resultado = np.zeros_like(imagem)
+        
+        for i in range(imagem.shape[0]):
+            for j in range(imagem.shape[1]):
+                vizinhanca = padded[i:i+tamanho_kernel, j:j+tamanho_kernel]
+                resultado[i,j] = np.sum(vizinhanca * kernel)
+        
+        return resultado.astype(np.uint8)
 
 def filtro_laplaciano(imagem, ksize=3):
 

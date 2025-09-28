@@ -23,7 +23,6 @@ def criar_menu_filtros(root, callback, image_manager):
     submenu_pa.add_command(label="Sobel", command=lambda: filtro_sobel_janela(image_manager))
     menu.add_cascade(label="Passa-alta", menu=submenu_pa)
     
-    # Opção de limiarização
     menu.add_command(label="Limiarização", command=lambda: limiarizacao_global_janela(image_manager))
     return menu
 
@@ -188,13 +187,13 @@ def limiarizacao_global_janela(image_manager):
     label_limiar = tk.Label(janela, text="Valor do limiar (0-255):")
     label_limiar.pack()
     input_limiar = tk.Entry(janela)
-    input_limiar.insert(0, "127")  # valor padrão
+    input_limiar.insert(0, "127")  
     input_limiar.pack()
     
     label_max = tk.Label(janela, text="Valor máximo (0-255):")
     label_max.pack()
     input_max = tk.Entry(janela)
-    input_max.insert(0, "255")  # valor padrão
+    input_max.insert(0, "255")  
     input_max.pack()
     
     botao = tk.Button(janela, text="Aplicar", 
