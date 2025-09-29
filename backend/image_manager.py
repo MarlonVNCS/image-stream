@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+from .filtros_frequencias import filtro_mediana, filtro_gaussiano
 
 
 class ImageManager:

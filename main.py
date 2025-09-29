@@ -64,8 +64,8 @@ class MainWindow:
         self.image_frame = tk.Frame(self.root)
         self.image_frame.grid(row=3, column=0, pady=10, sticky='nsew')
         
-        self.image_frame.grid_columnconfigure(0, weight=1)  # Coluna da imagem original
-        self.image_frame.grid_columnconfigure(1, weight=1)  # Coluna da imagem modificada
+        self.image_frame.grid_columnconfigure(0, weight=1) 
+        self.image_frame.grid_columnconfigure(1, weight=1)  
         
         self.original_image_label = None
         self.modified_image_label = None
