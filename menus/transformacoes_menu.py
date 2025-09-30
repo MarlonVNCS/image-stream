@@ -24,7 +24,7 @@ def transladar_janela(image_manager):
     
     botao = tk.Button(janela, text="Aplicar", command=lambda: transladar(image_manager,input_x.get(), input_y.get()))
     botao.pack(pady=10)
-def transladar(image_manager, x_shift, y_shift):
+def transladar(image_manager, x_shift=0, y_shift=0):
     try:
         x_shift = int(x_shift)
     except ValueError:
@@ -33,7 +33,6 @@ def transladar(image_manager, x_shift, y_shift):
         y_shift = int(y_shift)
     except ValueError:
         y_shift = 0
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = t.transladar(edi_matrix, x_shift, y_shift)
     image_manager.set_edited_matrix(matrix)
@@ -49,7 +48,6 @@ def rotacionar_janela(image_manager):
     botao.pack(pady=10)
     
 def rotacionar(image_manager, angle):
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = t.rotacionar(edi_matrix, angle)
     image_manager.set_edited_matrix(matrix)
@@ -67,7 +65,6 @@ def espelhar_janela(image_manager):
     botao = tk.Button(janela, text="Aplicar", command=lambda: espelhar(image_manager, var.get()))
     botao.pack(pady=10)
 def espelhar(image_manager, mode):
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = t.espelhar(edi_matrix, mode)
     image_manager.set_edited_matrix(matrix)
@@ -89,7 +86,6 @@ def aumentar(image_manager, factor):
         factor = int(factor)
     except ValueError:
         factor = 1
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = t.escala(edi_matrix, factor, factor)
     image_manager.set_edited_matrix(matrix)
@@ -109,7 +105,6 @@ def diminuir(image_manager, factor):
         factor = int(factor)
     except ValueError:
         factor = 1
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = t.escala(edi_matrix, 1/factor, 1/factor)
     image_manager.set_edited_matrix(matrix)

@@ -51,7 +51,6 @@ def aplicar_brilho_contraste(image_manager, brilho, contraste):
         contraste = float(contraste)
     except ValueError:
         contraste = 1.0
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = filtros.brilho_contraste(edi_matrix, brilho, contraste)
     image_manager.set_edited_matrix(matrix)
@@ -62,7 +61,6 @@ def grayscale_janela(image_manager):
     botao = tk.Button(janela, text="Aplicar", command=lambda: aplicar_grayscale(image_manager))
     botao.pack(pady=10)
 def aplicar_grayscale(image_manager):
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = filtros.grayscale(edi_matrix)
     image_manager.set_edited_matrix(matrix)
@@ -88,7 +86,6 @@ def aplicar_filtro_mediana(image_manager, kernel_size):
     except ValueError:
         kernel_size = 3
     
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = filtro_mediana(edi_matrix, tamanho_kernel=kernel_size)
     image_manager.set_edited_matrix(matrix)
@@ -112,7 +109,6 @@ def aplicar_filtro_gaussiano(image_manager, sigma):
     except ValueError:
         sigma = 1.0
     
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = filtro_gaussiano(edi_matrix, sigma=sigma)
     image_manager.set_edited_matrix(matrix)
@@ -138,7 +134,6 @@ def aplicar_filtro_laplaciano(image_manager, kernel_size):
     except ValueError:
         kernel_size = 3
     
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = filtro_laplaciano(edi_matrix, ksize=kernel_size)
     image_manager.set_edited_matrix(matrix)
@@ -175,7 +170,6 @@ def aplicar_filtro_sobel(image_manager, direcao, kernel_size):
     except ValueError:
         kernel_size = 3
     
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = filtro_sobel(edi_matrix, direcao=direcao, ksize=kernel_size)
     image_manager.set_edited_matrix(matrix)
@@ -217,7 +211,6 @@ def aplicar_limiarizacao_global(image_manager, limiar, valor_max):
     except ValueError:
         valor_max = 255
     
-    image_manager.load_image()
     edi_matrix = image_manager.get_edited_matrix()
     matrix = limiarizacao_global(edi_matrix, limiar=limiar, valor_max=valor_max)
     image_manager.set_edited_matrix(matrix)

@@ -70,7 +70,13 @@ class MainWindow:
         self.original_image_label = None
         self.modified_image_label = None
         
-
+        self.reset_image = tk.Button(self.root, text="Resetar imagem", command=self.resetar_imagem)
+        self.reset_image.grid(row=4, column=0, pady=10, sticky='nsew')
+        
+    def resetar_imagem(self):
+        self.image_manager.reset_to_original()
+        self.mostrar_modificacoes()
+    
     def on_menu_click(self, menu_item):
         print(f"Selecionou o item de menu: {menu_item}")
         if "imagem aberta" in menu_item.lower():
