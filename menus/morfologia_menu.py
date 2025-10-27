@@ -1,7 +1,7 @@
 import tkinter as tk
 from backend.morfologiaMatematica import (
     criar_elemento_estruturante, erosao,
-    dilatacao, abertura, fechamento
+    dilatacao, abertura, fechamento, afinamento
 )
 from .utils import janela_base
 
@@ -11,6 +11,7 @@ def criar_menu_morfologia(root, callback, image_manager):
     menu.add_command(label="Erosão", command=lambda: erosao_janela(image_manager))
     menu.add_command(label="Abertura", command=lambda: abertura_janela(image_manager))
     menu.add_command(label="Fechamento", command=lambda: fechamento_janela(image_manager))
+    menu.add_command(label="Afinamento", command=lambda: afinamento_janela(image_manager))
     return menu
 
 def criar_controles_elemento_estruturante(janela):
@@ -70,6 +71,29 @@ def fechamento_janela(image_manager):
                                                       input_tamanho.get()))
     botao.pack(pady=10)
 
+def afinamento_janela(image_manager):
+    janela = janela_base("Afinamento", altura=280)
+    
+    label_algoritmo = tk.Label(janela, text="(Algoritmo: Zhang-Suen)", 
+                              font=("Arial", 8))
+    label_algoritmo.pack(pady=5)
+    
+    label_iteracoes = tk.Label(janela, text="Número de iterações:")
+    label_iteracoes.pack(pady=5)
+    
+    input_iteracoes = tk.Entry(janela)
+    input_iteracoes.insert(0, "10")
+    input_iteracoes.pack(pady=5)
+    
+    label_info = tk.Label(janela, text="(Use -1 para iterações até convergência)", 
+                         font=("Arial", 8), fg="gray")
+    label_info.pack()
+    
+    botao = tk.Button(janela, text="Aplicar",
+                     command=lambda: aplicar_afinamento(image_manager,
+                                                       input_iteracoes.get()))
+    botao.pack(pady=10)
+
 def validar_tamanho(tamanho_str):
     try:
         tamanho = int(tamanho_str)
@@ -114,5 +138,16 @@ def aplicar_fechamento(image_manager, forma, tamanho):
     
     edi_matrix = image_manager.get_edited_matrix()
     matrix = fechamento(edi_matrix, elemento)
+    image_manager.set_edited_matrix(matrix)
+    image_manager.root.mostrar_modificacoes()
+
+def aplicar_afinamento(image_manager, iteracoes_str):
+    try:
+        iteracoes = int(iteracoes_str)
+    except ValueError:
+        iteracoes = 10
+    
+    edi_matrix = image_manager.get_edited_matrix()
+    matrix = afinamento(edi_matrix, iteracoes)
     image_manager.set_edited_matrix(matrix)
     image_manager.root.mostrar_modificacoes()
