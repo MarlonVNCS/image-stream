@@ -35,6 +35,8 @@ CRITÉRIOS DE VALIDAÇÃO PARA CÍRCULOS:
 
 import numpy as np
 from collections import deque
+from backend.filtros_frequencias import limiarizacao_global
+from backend.filtros import grayscale
 
 
 def detectar_linha_divisoria(imagem_gray, altura, largura):
@@ -235,11 +237,12 @@ def detectar_retangulo_domino(imagem_gray):
     """
     altura, largura = imagem_gray.shape
     
-    # Aplica threshold adaptativo para detectar bordas
+    # Aplica threshold adaptativo para detectar bordas usando função existente
     # Procura por pixels escuros (bordas do dominó)
     media_global = np.mean(imagem_gray)
     limiar = min(150, media_global * 0.7)
-    imagem_bin = (imagem_gray < limiar).astype(np.uint8) * 255
+    # Usa limiarização global com inversão (< limiar vira branco)
+    imagem_bin = 255 - limiarizacao_global(imagem_gray, limiar=limiar, valor_max=255)
     
     # Se muito poucos pixels escuros, não há dominó
     pixels_escuros = np.sum(imagem_bin > 0)
@@ -354,12 +357,12 @@ def detectar_domino(image_manager):
     if matriz is None:
         return -1, -1
     
-    # Converte para escala de cinza
+    # Converte para escala de cinza usando função existente
     if len(matriz.shape) == 3:
-        if matriz.shape[2] == 4:  # ARGB
-            imagem_gray = np.mean(matriz[:, :, :3], axis=2).astype(np.uint8)
-        else:  # RGB
-            imagem_gray = np.mean(matriz, axis=2).astype(np.uint8)
+        # Usa a função grayscale que retorna RGB (3 canais iguais)
+        matriz_gray_rgb = grayscale(matriz[:, :, :3] if matriz.shape[2] == 4 else matriz)
+        # Extrai apenas um canal (todos são iguais)
+        imagem_gray = matriz_gray_rgb[:, :, 0]
     else:
         imagem_gray = matriz.copy()
     
@@ -390,8 +393,9 @@ def detectar_domino(image_manager):
         raio_max = int(tamanho_imagem * 0.1)
         limiar_bin = 128
     
-    # Binarização (círculos são escuros, fundo é claro)
-    imagem_bin = (imagem_gray < limiar_bin).astype(np.uint8) * 255
+    # Binarização (círculos são escuros, fundo é claro) usando função existente
+    # Inverte porque queremos pixels escuros como brancos (objetos)
+    imagem_bin = 255 - limiarizacao_global(imagem_gray, limiar=limiar_bin, valor_max=255)
     
     # Remove a região da linha divisória para não detectar como ponto
     # Cria uma máscara excluindo alguns pixels ao redor da linha
