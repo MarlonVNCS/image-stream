@@ -30,24 +30,31 @@ def filtro_mediana(imagem, tamanho_kernel=3):
         
         return resultado
 
-def filtro_gaussiano(imagem, sigma=1.0):
-
+def filtro_gaussiano(imagem, sigma=1.0):    
     tamanho_kernel = int(6 * sigma + 1)
     if tamanho_kernel % 2 == 0:
         tamanho_kernel += 1
     
+    altura, largura = imagem.shape[:2]
+    tamanho_max = min(altura, largura)
+    if tamanho_kernel > tamanho_max:
+        tamanho_kernel = tamanho_max if tamanho_max % 2 == 1 else tamanho_max - 1
+        if tamanho_kernel < 3:
+            tamanho_kernel = 3    
     x = np.linspace(-(tamanho_kernel//2), tamanho_kernel//2, tamanho_kernel)
     x, y = np.meshgrid(x, x)
     kernel = np.exp(-(x**2 + y**2)/(2*sigma**2))
-    kernel = kernel / kernel.sum()  
+    kernel = kernel / kernel.sum()
     
     pad = tamanho_kernel // 2
     
     if len(imagem.shape) == 3:
-        resultado = np.zeros_like(imagem)
-        for canal in range(3):
+        num_canais = imagem.shape[2]  # Pode ser 3 (RGB) ou 4 (RGBA)
+        resultado = np.zeros_like(imagem, dtype=np.float64)
+        
+        for canal in range(num_canais):
             padded = np.pad(imagem[:,:,canal], pad, mode='reflect')
-            temp = np.zeros_like(imagem[:,:,canal])
+            temp = np.zeros(imagem[:,:,canal].shape, dtype=np.float64)
             
             for i in range(imagem.shape[0]):
                 for j in range(imagem.shape[1]):
@@ -55,17 +62,22 @@ def filtro_gaussiano(imagem, sigma=1.0):
                     temp[i,j] = np.sum(vizinhanca * kernel)
             
             resultado[:,:,canal] = temp
-        return resultado.astype(np.uint8)
+        
+        resultado = np.clip(resultado, 0, 255).astype(np.uint8)
+        print(f"[DEBUG Gaussiano] Saída ({num_canais} canais) - Shape: {resultado.shape}, dtype: {resultado.dtype}, min: {resultado.min()}, max: {resultado.max()}")
+        return resultado
     else:
         padded = np.pad(imagem, pad, mode='reflect')
-        resultado = np.zeros_like(imagem)
+        resultado = np.zeros_like(imagem, dtype=np.float64)
         
         for i in range(imagem.shape[0]):
             for j in range(imagem.shape[1]):
                 vizinhanca = padded[i:i+tamanho_kernel, j:j+tamanho_kernel]
                 resultado[i,j] = np.sum(vizinhanca * kernel)
         
-        return resultado.astype(np.uint8)
+        resultado = np.clip(resultado, 0, 255).astype(np.uint8)
+        print(f"[DEBUG Gaussiano] Saída Gray - Shape: {resultado.shape}, dtype: {resultado.dtype}, min: {resultado.min()}, max: {resultado.max()}")
+        return resultado
 
 def filtro_laplaciano(imagem, ksize=3):
     if imagem.dtype != np.uint8:
@@ -153,7 +165,7 @@ def filtro_sobel(imagem, direcao='ambos', ksize=3):
         return np.stack((grad,)*3, axis=-1)
     return grad
 
-def limiarizacao_global(imagem, limiar=127, valor_max=255):
+def limiarizacao_global(imagem, limiar=127, valor_max=255): # threshold
     if imagem.dtype != np.uint8:
         imagem = np.clip(imagem, 0, 255).astype(np.uint8)
     
